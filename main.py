@@ -7,7 +7,7 @@ CORRECT_NAMES = ["ivan", "214214"]
 CORRECT_EMAIL = "ivan@mail.com"
 CORRECT_NAME = "ivan"
 CORRECT_ADDRESSES = ["Novosibirsk, pl. Lenina 1", "Fasfasf"]
-# check_correct_name(CORRECT_NAMES, CORRECT_EMAIL)
-# check_incorrect_name(INCORRECT_NAMES, CORRECT_EMAIL)
-# check_incorrect_email(INCORRECT_EMAILS, CORRECT_NAME)
+check_correct_name(CORRECT_NAMES, CORRECT_EMAIL)
+check_incorrect_name(INCORRECT_NAMES, CORRECT_EMAIL)
+check_incorrect_email(INCORRECT_EMAILS, CORRECT_NAME)
 check_correct_current_address(CORRECT_ADDRESSES, CORRECT_NAMES, CORRECT_EMAIL)
