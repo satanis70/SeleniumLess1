@@ -1,0 +1,12 @@
+URL_QA_GURU = "https://qa-guru.github.io/one-page-form/text-box.html"
+INCORRECT_NAMES = [" ", "@", "f!#$%^&&*@$$$$", " niki "]
+INCORRECT_EMAILS = [" niki ", "inbox.com", " ", "@"]
+CORRECT_NAMES = ["ivan", "214214"]
+CORRECT_EMAIL = "ivan@mail.com"
+CORRECT_NAME = "ivan"
+CORRECT_ADDRESSES = ["Novosibirsk, pl. Lenina 1", "Fasfasf"]
+LOCATOR_USERNAME = "userName"
+LOCATOR_USER_EMAIL = "userEmail"
+LOCATOR_SUBMIT = "submit"
+LOCATOR_OUTPUT = "output"
+LOCATOR_CURRENT_ADDRESS = "currentAddress"
