@@ -1,20 +1,19 @@
 import time
 
 from selenium import webdriver
+from selenium.common import NoSuchElementException
 from selenium.webdriver.common.by import By
-
-from helpers import send_message_helper
 from helpers.send_message_helper import tear_down, set_up
-from util.config import CORRECT_NAMES, LOCATOR_USERNAME, LOCATOR_USER_EMAIL, LOCATOR_SUBMIT, LOCATOR_OUTPUT, \
-    CORRECT_ADDRESSES, LOCATOR_CURRENT_ADDRESS, CORRECT_EMAIL, CORRECT_NAME
+from util.config import LOCATOR_USERNAME, LOCATOR_USER_EMAIL, LOCATOR_SUBMIT, LOCATOR_OUTPUT, INCORRECT_NAMES, \
+    CORRECT_EMAIL, INCORRECT_EMAILS, CORRECT_NAME
 
 
-class PositiveTestSuite:
+class NegativeTestSuite:
     def __init__(self, url):
         self.url = url
 
-    def check_correct_name(self):
-        for correct_name in CORRECT_NAMES:
+    def check_incorrect_name(self):
+        for name in INCORRECT_NAMES:
             driver = webdriver.Chrome()
             # 1. Запуск браузера Chrome
             set_up(driver, self.url)
@@ -22,7 +21,7 @@ class PositiveTestSuite:
                 # 3. Поиск элементов и заполнение полей
                 # Находим поле Full Name по его ID и вводим текст
                 full_name_field = driver.find_element(By.ID, LOCATOR_USERNAME)
-                full_name_field.send_keys(correct_name)
+                full_name_field.send_keys(name)
 
                 # Находим поле Email по его ID и вводим текст
                 email_field = driver.find_element(By.ID, LOCATOR_USER_EMAIL)
@@ -35,21 +34,22 @@ class PositiveTestSuite:
                 # 4. Проверка результата
                 time.sleep(5)  # Пауза, чтобы увидеть результат отправки
 
-                # Находим блок с отправленными данными
-                result_box = driver.find_element(By.ID, LOCATOR_OUTPUT)
-
-                # Проверяем, что в блоке результата появился введенный текст
-                assert correct_name in result_box.text
-                print(f"Тест для имени '{correct_name}' успешно пройден!")
-            except Exception as e:
-                print(f"Тест для имени '{correct_name}' упал с ошибкой: {e}")
+                output = driver.find_element(By.ID, LOCATOR_OUTPUT)
+                output.find_element(By.ID,"name")
+                raise AssertionError(f"Тест для '{name}' упал с ошибкой")
+            except NoSuchElementException:
+                print(f"Тест для {name} пройден")
+                pass
+            except AssertionError as e:
+                print(f"Ошибка {e}")
             finally:
                 tear_down(driver)
 
-    def check_correct_current_address(self):
-        for correct_current_address in CORRECT_ADDRESSES:
-            # 1. Запуск браузера Chrome
+
+    def check_incorrect_email(self):
+        for email in INCORRECT_EMAILS:
             driver = webdriver.Chrome()
+            # 1. Запуск браузера Chrome
             set_up(driver, self.url)
             try:
                 # 3. Поиск элементов и заполнение полей
@@ -59,11 +59,7 @@ class PositiveTestSuite:
 
                 # Находим поле Email по его ID и вводим текст
                 email_field = driver.find_element(By.ID, LOCATOR_USER_EMAIL)
-                email_field.send_keys(CORRECT_EMAIL)
-
-                # Находим поле Current Address по его ID и вводим текст
-                current_address_field = driver.find_element(By.ID, LOCATOR_CURRENT_ADDRESS)
-                current_address_field.send_keys(correct_current_address)
+                email_field.send_keys(email)
 
                 # Находим кнопку Submit по ее ID и кликаем
                 submit_button = driver.find_element(By.ID, LOCATOR_SUBMIT)
@@ -72,11 +68,13 @@ class PositiveTestSuite:
                 # 4. Проверка результата
                 time.sleep(5)  # Пауза, чтобы увидеть результат отправки
 
-                # Находим блок с отправленными данными
-                result_box = driver.find_element(By.ID, LOCATOR_OUTPUT)
-                assert correct_current_address in result_box.text
-                print(f"Тест для Current Address {correct_current_address} успешно пройден!")
-            except Exception as e:
-                print(f"Тест для Current Address {correct_current_address} упал с ошибкой {e}")
+                output = driver.find_element(By.ID, LOCATOR_OUTPUT)
+                output.find_element(By.ID, "email")
+                raise AssertionError (f"Тест для '{email}' упал с ошибкой")
+            except NoSuchElementException:
+                print(f"Тест для {email} пройден")
+                pass
+            except AssertionError as e:
+                print(f"Ошибка {e}")
             finally:
                 tear_down(driver)

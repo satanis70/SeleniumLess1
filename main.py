@@ -1,8 +1,5 @@
-from selenium import webdriver
-
-from negative_tests import negativeTestSuite
-from negative_tests.negativeTestSuite import NegativeTestSuite
-from positive_tests.positiveTestSuite import PositiveTestSuite
+from tests.negative_tests.negativeTestSuite import NegativeTestSuite
+from tests.positive_tests.positiveTestSuite import PositiveTestSuite
 from util.config import URL_QA_GURU
 
 negative_TestSuite = NegativeTestSuite(URL_QA_GURU)
