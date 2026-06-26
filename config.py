@@ -1,3 +1,6 @@
+# Text Box Form
+from util.many_simbols import MANYSIMBOLS
+
 URL_QA_GURU = "https://qa-guru.github.io/one-page-form/text-box.html"
 INCORRECT_NAMES = [" ", "@", "f!#$%^&&*@$$$$", " niki "]
 INCORRECT_EMAILS = [" niki ", "inbox.com", " ", "@"]

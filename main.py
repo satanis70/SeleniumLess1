@@ -1,10 +1,1 @@
-from tests.negative_tests.negativeTestSuite import NegativeTestSuite
-from tests.positive_tests.positiveTestSuite import PositiveTestSuite
-from util.config import URL_QA_GURU
 
-negative_TestSuite = NegativeTestSuite(URL_QA_GURU)
-negative_TestSuite.check_incorrect_name()
-negative_TestSuite.check_incorrect_email()
-positive_TestSuite = PositiveTestSuite(URL_QA_GURU)
-positive_TestSuite.check_correct_name()
-positive_TestSuite.check_correct_current_address()
