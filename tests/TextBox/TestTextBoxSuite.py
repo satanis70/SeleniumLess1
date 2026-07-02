@@ -1,6 +1,9 @@
 import pytest
 from selenium import webdriver
+from selenium.common import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 LOCATOR_USERNAME = "userName"
 LOCATOR_USER_EMAIL = "userEmail"
@@ -48,8 +51,16 @@ class TestTextBoxSuite:
         # 1. Открытие страницы
         driver.get(URL)
 
+        fluent_wait = WebDriverWait(
+            driver,
+            timeout=10,
+            poll_frequency=0.5,
+            ignored_exceptions=[NoSuchElementException]
+        )
+
         # 2. Поиск нужных элементов
-        fullname_field = driver.find_element(By.ID, LOCATOR_USERNAME)
+        # fullname_field = driver.find_element(By.ID, LOCATOR_USERNAME)
+        fullname_field = fluent_wait.until(EC.visibility_of_element_located((By.ID, LOCATOR_USERNAME)))
         email_field = driver.find_element(By.ID, LOCATOR_USER_EMAIL)
         current_address_field = driver.find_element(By.ID, LOCATOR_CURRENT_ADDRESS)
         permanent_address_field = driver.find_element(By.ID, LOCATOR_PERMANENT_ADDRESS)

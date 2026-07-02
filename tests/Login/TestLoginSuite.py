@@ -3,6 +3,8 @@ import time
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 LOCATOR_LOGIN = "login-input"
 LOCATOR_PASSWORD = "password-input"
@@ -23,7 +25,6 @@ class TestLoginSuite:
 
         driver = webdriver.Chrome()
         driver.maximize_window()
-        driver.implicitly_wait(5)
 
         yield driver
 
@@ -52,11 +53,12 @@ class TestLoginSuite:
 
         # 1. Открытие тестируемой страницы
         driver.get(URL)
+        wait = WebDriverWait(driver, 10)
         # 2. Поиск элементов формы
         login_field = driver.find_element(By.ID, LOCATOR_LOGIN)
         password_field = driver.find_element(By.ID, LOCATOR_PASSWORD)
-        submit_button = driver.find_element(By.ID, LOCATOR_SUBMIT_LOGIN)
-
+        # Явно ожидаем что элемент появился в DOM
+        submit_button = wait.until(EC.presence_of_element_located((By.ID, LOCATOR_SUBMIT_LOGIN)))
         # 3. Очищаем поля
         login_field.clear()
         password_field.clear()
@@ -66,8 +68,8 @@ class TestLoginSuite:
         password_field.send_keys(password)
         submit_button.click()
         # 5. Находит текст с результатом
-        result_actual = driver.find_element(By.ID, LOCATOR_RESULT).text
 
+        result_actual = driver.find_element(By.ID, LOCATOR_RESULT).text
         # 6. Проверка результата
         if scenario_type == "positive":
             assert expected_text in result_actual, f"Ожидался успешный вход, но получено: '{result_actual}'"  # "Wrong login or password"
