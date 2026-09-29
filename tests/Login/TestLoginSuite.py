@@ -1,5 +1,3 @@
-import time
-
 import pytest
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -18,10 +16,6 @@ class TestLoginSuite:
     @pytest.fixture
     def driver(self):
         """Фикстура для инициализации и закрытия браузера."""
-        # options = webdriver.ChromeOptions()
-        # options.add_argument("--headless")  # Фоновый режим для CI/CD
-        # options.add_argument("--window-size=1920,1080")
-        # driver = webdriver.Chrome(options=options)
 
         driver = webdriver.Chrome()
         driver.maximize_window()
@@ -30,35 +24,20 @@ class TestLoginSuite:
 
         driver.quit()
 
-    # Реализация DDT подхода через параметризацию pytest
-    @pytest.mark.parametrize(
-        "login, password, scenario_type, expected_text",
-        [
-            # ---  ПОЗИТИВНЫЕ СЦЕНАРИИ ---
-            ("nik@mail.ru", "123456", "positive", "Вы успешно вошли"),
-            ("name@example.com", "28itji", "positive", "Вы успешно вошли"),
-            # --- НЕГАТИВНЫЕ СЦЕНАРИИ ---
-            ("im@mail.com", " ", "negative", "Заполните поле пароль"),
-            (" ", "123456", "negative", "Заполните поле логин"),
-            (" ", " ", "negative", "Заполните поля"),
-            ("1", "123456", "negative", "Для входа в систему необходимо ввести не менее 3 символов."),
-            ("1", "123456", "negative", "Логин должен быть больше 2 символов"),
-            ("123", "1", "negative", "Пароль должен быть больше 5 символов"),
-            ("12345678901234567890123456789012345678901234567890", "123456", "negative",
-             "Логин должен быть не длиньше 32 символов")
-        ]
-    )
-    def test_login_form(self, driver, login, password, scenario_type, expected_text):
-        """Тест кейс, принимающий наборы данных (DDT)."""
-
-        # 1. Открытие тестируемой страницы
+    @staticmethod
+    def set_up_and_return_result(driver, login, password, scenario_type, expected_text):
         driver.get(URL)
+
+        # 1. Подготовка ожидания
         wait = WebDriverWait(driver, 10)
+
         # 2. Поиск элементов формы
         login_field = driver.find_element(By.ID, LOCATOR_LOGIN)
         password_field = driver.find_element(By.ID, LOCATOR_PASSWORD)
+
         # Явно ожидаем что элемент появился в DOM
         submit_button = wait.until(EC.presence_of_element_located((By.ID, LOCATOR_SUBMIT_LOGIN)))
+
         # 3. Очищаем поля
         login_field.clear()
         password_field.clear()
@@ -67,12 +46,40 @@ class TestLoginSuite:
         login_field.send_keys(login)
         password_field.send_keys(password)
         submit_button.click()
-        # 5. Находит текст с результатом
 
-        result_actual = driver.find_element(By.ID, LOCATOR_RESULT).text
-        # 6. Проверка результата
-        if scenario_type == "positive":
-            assert expected_text in result_actual, f"Ожидался успешный вход, но получено: '{result_actual}'"  # "Wrong login or password"
-        else:
-            assert expected_text in result_actual or driver.current_url != "success_url", \
-                f"Форма пропустила некорректные данные: login='{login}', Pass='{password}'"
+        # 5. Находим текст с результатом
+        result_element = wait.until(
+            EC.visibility_of_element_located((By.ID, LOCATOR_RESULT))
+        )
+        return result_element.text
+
+    @pytest.mark.parametrize(
+        "login, password, scenario_type, expected_text",
+        [
+            ("nik@mail.ru", "123456", "positive", "Вы успешно вошли"),
+            ("name@example.com", "28itji", "positive", "Вы успешно вошли"),
+        ]
+    )
+    def test_login_form_positive(self, driver, login, password, scenario_type, expected_text):
+        result_actual = self.set_up_and_return_result(driver, login, password, scenario_type, expected_text)
+
+        # Проверка результата
+        assert expected_text in result_actual, f"Ожидался успешный вход, но получено: '{result_actual}'"
+
+    @pytest.mark.parametrize(
+        "login, password, scenario_type, expected_text",
+        [
+            ("im@mail.com", " ", "negative", "Password is required (minimum 6 characters)"),
+            (" ", "123456", "negative", "Login is required (minimum 3 characters)"),
+            (" ", " ", "negative", "Login and password are required (minimum 3 and 6 characters)"),
+            ("1", "123456", "negative", "Login must be at least 3 characters"),
+            ("123", "1", "negative", "Password must be at least 6 characters"),
+            ("12345678901234567890123456789012345678901234567890", "123456", "negative",
+             "Логин должен быть не больше 32 символов")
+        ]
+    )
+    def test_login_form_negative(self, driver, login, password, scenario_type, expected_text):
+        result_actual = self.set_up_and_return_result(driver, login, password, scenario_type, expected_text)
+
+        # Проверка результата
+        assert expected_text in result_actual, f"Ожидалось '{expected_text}', получено '{result_actual}'"

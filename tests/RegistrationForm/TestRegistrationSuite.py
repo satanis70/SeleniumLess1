@@ -20,6 +20,7 @@ LOCATOR_HOBBIES_SPORTS = "hobbies-checkbox-1"
 LOCATOR_HOBBIES_READING = "hobbies-checkbox-2"
 LOCATOR_HOBBIES_MUSIC = "hobbies-checkbox-3"
 LOCATOR_CURRENT_ADDRESS = "currentAddress"
+LOCATOR_SUBMIT_BUTTON = "submit"
 URL = "https://qa-guru.github.io/one-page-form/automation-practice-form.html"
 
 
@@ -55,11 +56,14 @@ class TestRegistrationForm:
         email_field = explicit_wait.until(EC.visibility_of_element_located((By.ID, LOCATOR_EMAIL)))
         gender_radio = explicit_wait.until(EC.visibility_of_element_located((By.ID, gender)))
         user_number_field = explicit_wait.until(EC.visibility_of_element_located((By.ID, LOCATOR_USER_NUMBER)))
+        submit_button = explicit_wait.until(EC.element_to_be_clickable((By.ID, LOCATOR_SUBMIT_BUTTON)))
         # 4. Очищаем поля
         first_name_field.clear()
         last_name_field.clear()
         email_field.clear()
         user_number_field.clear()
+        # Убираем баннер
+        driver.execute_script("document.getElementById('fixedban')?.remove();")
         # 5. Заполняем поля
         first_name_field.send_keys(first_name)
         last_name_field.send_keys(last_name)
@@ -67,7 +71,9 @@ class TestRegistrationForm:
         gender_radio.click()
         user_number_field.send_keys(phone_number)
         time.sleep(10)
-        # Буду дописывать на следующем дз
+        # 6. Скролим до кнопки submit и кликаем
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", submit_button)
+        submit_button.click()
 
 
 
